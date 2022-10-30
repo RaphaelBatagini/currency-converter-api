@@ -12,5 +12,5 @@ This repository contains the code of an API to convert currencies developed as a
 
 ## Setup :gear:
 
-1. Copy .env.example file to a new .env file and fill all environment variables;
+1. Copy .env.example file to a new .env file and change any environment variable if needed;
 2. Start docker with `docker-compose up` or `docker-compose up -d` and this will install all project dependencies;

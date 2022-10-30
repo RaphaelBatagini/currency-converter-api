@@ -1,11 +1,11 @@
 version: '3.8'
 services:
-  backend:
+  currency-conversion-api-development:
     build:
       context: .
     ports:
       - ${PORT}:${PORT}
-    container_name: currency-conversion-api-backend
+    container_name: currency-conversion-api-backend-development
     restart: always
     volumes:
       - .:/usr/src/currency-conversion-api-backend
@@ -15,12 +15,12 @@ services:
       NODE_ENV: development
     command: yarn dev
     depends_on:
-      - database
-      - cache
+      - currency-conversion-api-database-development
+      - currency-conversion-api-cache-development
 
-  database:
+  currency-conversion-api-database-development:
     image: postgres:14.5
-    container_name: currency-conversion-api-database
+    container_name: currency-conversion-api-database-development
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -29,9 +29,11 @@ services:
       PGDATA: /var/lib/postgresql/data
     volumes:
       - ./db:/var/lib/postgresql/data
+    command: postgres -p ${DB_PORT}
 
-  cache:
+  currency-conversion-api-cache-development:
     image: redis:6.2-alpine
+    container_name: currency-conversion-api-cache-development
     restart: always
     ports:
       - '${CACHE_PORT}:${CACHE_PORT}'
