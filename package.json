@@ -4,7 +4,7 @@
   "description": "API to convert currencies",
   "main": "index.js",
   "scripts": {
-    "test": ""
+    "test": "jest --passWithNoTests --noStackTrace --runInBand --detectOpenHandles"
   },
   "author": "Raphael Batagini",
   "license": "ISC",

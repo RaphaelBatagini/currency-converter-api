@@ -1,0 +1,11 @@
+FROM node:16.13
+WORKDIR /usr/src/driven-code-evaluator
+COPY ./package*.json ./
+COPY ./yarn.lock ./
+COPY .npmrc ./
+RUN npm install -g sonarqube-scanner
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc yarn install
+RUN chmod -77 /usr/src/driven-code-evaluator/node_modules
+COPY . .
+ENV LANG=en_US.UTF-8 \
+  LC_ALL=en_US.UTF-8
