@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - ${PORT}:${PORT}
+    container_name: currency-conversion-api-backend
+    restart: always
+    volumes:
+      - .:/usr/src/currency-conversion-api-backend
+      - ./node_modules:/usr/src/currency-conversion-api-backend/node_modules
+    working_dir: /usr/src/currency-conversion-api-backend
+    environment:
+      NODE_ENV: development
+    command: yarn dev
+    depends_on:
+      - database
+      - cache
+
+  database:
+    image: postgres:14.5
+    container_name: currency-conversion-api-database
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '${CACHE_PORT}:${CACHE_PORT}'
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${CACHE_PASS}
+    volumes: 
+      - ./cache:/data
