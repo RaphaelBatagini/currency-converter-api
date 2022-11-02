@@ -3,8 +3,6 @@ const fs = require('fs');
 const { SnakeNamingStrategy } = require('typeorm-naming-strategies');
 const dotenv = require('dotenv');
 
-console.log(process.env);
-
 if (!process.env.NODE_ENV) {
   throw new Error('NODE_ENV must be defined');
 }
@@ -27,7 +25,7 @@ module.exports = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   namingStrategy: new SnakeNamingStrategy(),
-  entities: [`${rootDir}/models/*.{ts,js}`],
-  migrations: [`${rootDir}/migrations/*.{ts,js}`],
+  entities: [`${rootDir}/infra/database/models/*.{ts,js}`],
+  migrations: [`${rootDir}/infra/database/migrations/*.{ts,js}`],
   migrationsTransactionMode: 'each',
 };

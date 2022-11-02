@@ -11,7 +11,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "migration:create": "npm run typeorm -- migration:create -d ./src/migrations -n"
+    "migration:create": "npm run typeorm -- migration:create -d ./src/infra/database/migrations -n"
   },
   "author": "Raphael Batagini",
   "license": "ISC",
