@@ -1,8 +1,8 @@
 import { CurrencyExchange } from "@/domain/currency-exchange";
-import { getCurrencyExchangeRepository } from "@/infra/repositories";
+import { IRepository } from "@/infra/repositories/interface";
 
 export class GetCurrencyExchangeConverted {
-  constructor(private readonly repository = getCurrencyExchangeRepository()) {}
+  constructor(private repository: IRepository<CurrencyExchange>) {}
 
   async execute(currency: string, amount: number)  {
     const existingCurrencyExchanges: Array<CurrencyExchange> = await this.repository.list();
@@ -10,11 +10,13 @@ export class GetCurrencyExchangeConverted {
       currency,
     });
   
-    const conversionRate = selectedCurrencyExchange[0].conversionRate;
+    const conversionRate = selectedCurrencyExchange[0]?.conversionRate;
     const baseRate = conversionRate * amount;
   
-    return existingCurrencyExchanges.map((currencyExchange) => {
+    const calculatedCurrencyExchanges = existingCurrencyExchanges.map((currencyExchange) => {
       return { currency: currencyExchange.currency, conversionRate: baseRate / currencyExchange.conversionRate };
     });
+
+    return calculatedCurrencyExchanges;
   }
 }
