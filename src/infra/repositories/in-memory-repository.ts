@@ -67,7 +67,7 @@ export class InMemoryRepository<Type extends GenericEntity> implements IReposito
     try {
       const data = fs.readFileSync(this.dbFilePath, { encoding: this.fileEncoding, flag: 'a+' });
       const jsonData = data || '{}';
-      return JSON.parse(jsonData);
+      this.entities = JSON.parse(jsonData);
     } catch(e) {
       throw e;
     }
