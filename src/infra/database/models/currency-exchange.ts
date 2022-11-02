@@ -15,7 +15,7 @@ export class CurrencyExchangeModel {
   currency: string;
 
   @Column()
-  conversion_rate: number;
+  conversionRate: number;
 }
 
-export const getCurrencyExchangeRepository = (): Repository<CurrencyExchange> => getRepository(CurrencyExchange);
+export const getCurrencyExchangeRepository = (): Repository<CurrencyExchangeModel> => getRepository(CurrencyExchangeModel);

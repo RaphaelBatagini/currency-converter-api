@@ -14,3 +14,7 @@ This repository contains the code of an API to convert currencies developed as a
 
 1. Copy .env.example file to a new .env file and change any environment variable if needed;
 2. Start docker with `docker-compose up` or `docker-compose up -d` and this will install all project dependencies;
+2. Run migrations with this command:
+```sh
+docker-compose run currency-conversion-api-development sh -c "yarn migration:run"
+```

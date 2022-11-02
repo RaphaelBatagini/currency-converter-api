@@ -1,47 +1,53 @@
-import { randomUUID } from "crypto";
+import { getConnection, Repository } from "typeorm";
 import { IRepository } from "./interface";
 
-export class DatabaseRepository<Type extends GenericEntity> implements IRepository<Type> {
-  private entities: Array<Type> = [];
+export class DatabaseRepository<Type extends GenericEntity, Model extends GenericEntity> implements IRepository<Type> {
+  constructor(
+    private readonly repository: Repository<Model>,
+    private readonly modelToTypeConverter: ModelToTypeConverter<Model, Type>,
+    private readonly typeToModelConverter: TypeToModelConverter<Type, Model>,
+  ) {}
 
-  list(): Array<Type> {
-    return this.entities;
+  async list(): Promise<Type[]> {
+    const models = await this.repository.find();
+    return models.map(model => this.modelToTypeConverter(model));
   }
 
-  get(entityId: number | string): Type | undefined {
-    return this.entities.find((entity) => {
-      return entity.id === entityId;
-    });
+  async get(entityId: number | string): Promise<Type | undefined> {
+    const model = await this.repository.findOne(entityId);
+    return this.modelToTypeConverter(model);
   }
 
-  search(filter: Object): Array<Type> {
-    return this.entities.filter((entity) => {
-      for (const [key, value] of Object.entries(filter)) {
-        if (!entity[key] || entity[key] !== value) {
-          return false;
-        }
-      }
-
-      return true;
-    });
+  async search(filter: Object): Promise<Type[]> {
+    const models = await this.repository.find({ where: filter });
+    return models.map(model => this.modelToTypeConverter(model));
   }
 
-  persist(entity: Type): Type {
-    entity.id = randomUUID();
-    this.entities.push(entity);
+  async persist(entity: Type): Promise<Type> {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+
+    const model = this.typeToModelConverter(entity);
+    await queryRunner.manager.save(model);
+    entity.id = model.id;
 
     return entity;
   }
 
-  remove(entityId: number | string): void {
-    const index = this.entities.findIndex((entity) => {
-      return entity.id === entityId;
-    });
-
-    delete this.entities[index];
+  async remove(entityId: number | string): Promise<void> {
+    const model = await this.repository.findOne(entityId);
+    await this.repository.remove(model);
   }
 }
 
 interface GenericEntity {
   id?: string | number;
+}
+
+interface ModelToTypeConverter<Model, Type> {
+  (model: Model): Type;
+}
+
+interface TypeToModelConverter<Type, Model> {
+  (entity: Type): Model;
 }
