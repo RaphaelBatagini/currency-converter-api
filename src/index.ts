@@ -1,5 +1,10 @@
-import { server, Server } from '@/infra/webserver';
 import { logger } from './infra/logger';
+import { getWebServer } from './infra/webserver';
+import { connect, close } from '@/infra/database/config';
+import path from 'path';
+import * as dotenv from 'dotenv';
+import fs from 'fs';
+import { routes } from './adapter/http/routes';
 
 enum ExitCodes {
   Failure = 1,
@@ -18,24 +23,30 @@ process.on('uncaughtException', (error) => {
 
 async function initServer(): Promise<void> {
   try {
-    await server.init();
-    server.listen(+process.env.PORT, () => {
-      logger.info(`Listening on port ${process.env.PORT}`);
-    });
-    handleExit(server);
+    loadEnvironmentVariables();
+    await databaseSetup();
+    const webserver = getWebServer();
+    webserver.init(+process.env.PORT, routes, logger);
+    handleExit();
   } catch (err) {
     logger.error('Server exited with error', err);
     process.exit(ExitCodes.Failure);
   }
 }
 
-function handleExit(server: Server) {
+async function databaseSetup(): Promise<void> {
+  if (process.env.REPOSITORY_TYPE !== 'memory') {
+    await connect();
+  }
+}
+
+function handleExit() {
   const exitSignals: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
 
   exitSignals.forEach((sig) => {
     process.on(sig, async () => {
       try {
-        await server.close();
+        await closeConnection();
         logger.info('Server exited successfully');
         process.exit(ExitCodes.Success);
       } catch (err) {
@@ -44,6 +55,23 @@ function handleExit(server: Server) {
       }
     });
   });
+}
+
+async function closeConnection(): Promise<void> {
+  await close();
+}
+
+function loadEnvironmentVariables(): void {
+  if (!process.env.NODE_ENV) {
+    throw new Error('NODE_ENV must be defined');
+  }
+
+  const envFilePath = path.resolve(__dirname, `./../../../.env.${process.env.NODE_ENV}`);
+  if (process.env.NODE_ENV !== 'production' && fs.existsSync(envFilePath)) {
+    dotenv.config({ path: envFilePath });
+  } else {
+    dotenv.config();
+  }
 }
 
 initServer();
