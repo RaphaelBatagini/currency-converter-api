@@ -32,14 +32,14 @@ export class CurrencyExchange {
   }
 }
 
-class InvalidCurrencyError extends Error {
+export class InvalidCurrencyError extends Error {
   constructor(currency?: string) {
     super(`Invalid currency name ${currency}. Currency should be a 3 characters long string`);
     this.name = 'InvalidCurrencyError';
   }
 }
 
-class InvalidConversionRateError extends Error {
+export class InvalidConversionRateError extends Error {
   constructor(conversionRate?: number) {
     super(`Invalid conversion rate ${conversionRate}. Conversion Rate should be a positive number`);
     this.name = 'InvalidConversionRateError';
