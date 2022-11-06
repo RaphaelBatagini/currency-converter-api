@@ -16,6 +16,7 @@ services:
       - /bin/sh
       - -c
       - |
+        yarn
         yarn migration:run
         yarn test
     depends_on:
