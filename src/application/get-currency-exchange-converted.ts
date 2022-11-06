@@ -6,17 +6,28 @@ export class GetCurrencyExchangeConverted {
 
   async execute(currency: string, amount: number)  {
     const existingCurrencyExchanges: Array<CurrencyExchange> = await this.repository.list();
-    const selectedCurrencyExchange: Array<CurrencyExchange> = await this.repository.search({
+    const selectedCurrencyExchange: CurrencyExchange = (await this.repository.search({
       currency,
-    });
+    }))?.shift();
+
+    if (!selectedCurrencyExchange) {
+      throw new CurrencyNotFoundError(currency);
+    }
   
-    const conversionRate = selectedCurrencyExchange[0]?.conversionRate;
+    const conversionRate = selectedCurrencyExchange.getConversionRate();
     const baseRate = conversionRate * amount;
   
     const calculatedCurrencyExchanges = existingCurrencyExchanges.map((currencyExchange) => {
-      return { currency: currencyExchange.currency, conversionRate: baseRate / currencyExchange.conversionRate };
+      return { currency: currencyExchange.getCurrency(), amount: baseRate / currencyExchange.getConversionRate() };
     });
 
     return calculatedCurrencyExchanges;
+  }
+}
+
+export class CurrencyNotFoundError extends Error {
+  constructor(currency?: string) {
+    super(`Currency ${currency} not found`);
+    this.name = 'CurrencyNotFoundError';
   }
 }

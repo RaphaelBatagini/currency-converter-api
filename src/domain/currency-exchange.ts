@@ -10,15 +10,15 @@ export class CurrencyExchange {
   }
 
   getId(): number | string {
-    return this.id;
+    return this?.id;
   }
 
   getCurrency(): string {
-    return this.currency;
+    return this?.currency;
   }
 
   getConversionRate(): number {
-    return this.conversionRate;
+    return this?.conversionRate;
   }
 
   setId(id: number | string): void {
