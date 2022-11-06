@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import fs from 'fs';
 import path from "path";
+import { json } from "stream/consumers";
 import { IRepository } from "./interface";
 
 export class InMemoryRepository<Type extends GenericEntity> implements IRepository<Type> {
@@ -8,20 +9,22 @@ export class InMemoryRepository<Type extends GenericEntity> implements IReposito
   private readonly dbFilePath = path.resolve(__dirname, '../../../db.json');
   private readonly fileEncoding = 'utf8';
 
-  list(): Array<Type> {
-    this.load();
+  constructor(private readonly makeType: (entity: Object) => Type) {}
+
+  async list(): Promise<Type[]> {
+    await this.load();
     return this.entities;
   }
 
-  get(entityId: number | string): Type | undefined {
-    this.load();
+  async get(entityId: number | string): Promise<Type | undefined> {
+    await this.load();
     return this.entities.find((entity) => {
-      return entity.id === entityId;
+      return entity.getId() === entityId;
     });
   }
 
-  search(filter: Object): Array<Type> {
-    this.load();
+  async search(filter: Object): Promise<Type[]> {
+    await this.load();
     return this.entities.filter((entity) => {
       for (const [key, value] of Object.entries(filter)) {
         if (!entity[key] || entity[key] !== value) {
@@ -33,41 +36,45 @@ export class InMemoryRepository<Type extends GenericEntity> implements IReposito
     });
   }
 
-  persist(entity: Type): Type {
-    entity.id = randomUUID();
+  async persist(entity: Type): Promise<Type> {
+    await this.load();
+    
+    entity.setId(randomUUID());
     this.entities.push(entity);
 
-    this.commit();
+    await this.commit();
 
     return entity;
   }
 
-  remove(entityId: number | string): void {
+  async remove(entityId: number | string): Promise<void> {
+    await this.load();
+
     const index = this.entities.findIndex((entity) => {
-      return entity.id === entityId;
+      return entity.getId() === entityId;
     });
 
-    this.commit();
-
-    delete this.entities[index];
+    this.entities.splice(index, 1);
+    
+    await this.commit();
   }
 
   // TODO: persist data apart for each repository
-  private commit() {
+  private async commit() {
     try {
-      const data = JSON.stringify(this.entities);
-      fs.writeFileSync(this.dbFilePath, data, { encoding: this.fileEncoding, flag: 'w' });
+      const data = JSON.stringify(this.entities.filter((entity: Type) => !!entity?.getId()));
+      await fs.promises.writeFile(this.dbFilePath, data, { encoding: this.fileEncoding, flag: 'w' });
     } catch(e) {
       throw e;
     }
   }
 
   // TODO: persist data apart for each repository and read from there
-  private load = () => {
+  private async load() {
     try {
-      const data = fs.readFileSync(this.dbFilePath, { encoding: this.fileEncoding, flag: 'a+' });
-      const jsonData = data || '{}';
-      this.entities = JSON.parse(jsonData);
+      const data = await fs.promises.readFile(this.dbFilePath, { encoding: this.fileEncoding, flag: 'a+' });
+      const jsonData = data.trim() ? JSON.parse(data.trim()) : [];
+      this.entities = jsonData.filter((entity: Object) => !!entity).map(this.makeType);
     } catch(e) {
       throw e;
     }
@@ -75,5 +82,6 @@ export class InMemoryRepository<Type extends GenericEntity> implements IReposito
 }
 
 interface GenericEntity {
-  id?: string | number;
+  getId: () => string | number;
+  setId: (id: string | number) => void;
 }

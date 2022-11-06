@@ -1,7 +1,7 @@
 import { getConnection, Repository } from "typeorm";
 import { IRepository } from "./interface";
 
-export class DatabaseRepository<Type extends GenericEntity, Model extends GenericEntity> implements IRepository<Type> {
+export class DatabaseRepository<Type extends GenericEntity, Model extends GenericModel> implements IRepository<Type> {
   constructor(
     private readonly repository: Repository<Model>,
     private readonly modelToTypeConverter: ModelToTypeConverter<Model, Type>,
@@ -29,7 +29,7 @@ export class DatabaseRepository<Type extends GenericEntity, Model extends Generi
 
     const model = this.typeToModelConverter(entity);
     await queryRunner.manager.save(model);
-    entity.id = model.id;
+    entity.setId(model.id);
 
     return entity;
   }
@@ -41,6 +41,11 @@ export class DatabaseRepository<Type extends GenericEntity, Model extends Generi
 }
 
 interface GenericEntity {
+  getId: () => string | number;
+  setId: (id: string | number) => void;
+}
+
+interface GenericModel {
   id?: string | number;
 }
 
