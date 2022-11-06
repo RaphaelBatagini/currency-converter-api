@@ -5,6 +5,8 @@ import httpStatus from 'http-status';
 import { Routes } from '@/adapter/http/routes';
 import { IServer } from './interface';
 import { ILogger } from '../logger/interface';
+import swaggerUi from "swagger-ui-express";
+const swaggerDocument = require('./../../../swagger.json');
 
 export class ExpressWebServer implements IServer {
   readonly server = express();
@@ -32,6 +34,8 @@ export class ExpressWebServer implements IServer {
     });
 
     const router = Router();
+    router.use('/docs', swaggerUi.serve);
+    router.get('/docs', swaggerUi.setup(swaggerDocument));
     this.routes.forEach(route => {
       router[route.method.toLowerCase()](route.path, (req: Request, res: Response) => route.handler(req, res));
     });

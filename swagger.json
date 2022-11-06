@@ -1,0 +1,84 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a NodeJS API to convert currencies",
+    "version": "1.0.0",
+    "title": "Backend Software Engineer - SBF Group",
+    "contact": {
+      "email": "raphabatagini@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "schemes": ["http"],
+  "host": "localhost:3000",
+  "basePath": "/api",
+  "paths": {
+    "/convert/{currency}/{amount}": {
+      "get": {
+        "summary": "Convert the informed currency to all other currencies registered",
+        "description": "Convert the informed currency to all other currencies registered",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "path",
+            "description": "The selected currency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "in": "path",
+            "description": "The amount to converted",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/currencyExchangeResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "currencyExchangeResponse": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        }
+      }
+    },
+    "InvalidResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

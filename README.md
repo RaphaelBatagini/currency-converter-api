@@ -29,3 +29,6 @@ docker-compose -f docker-compose.test.yml --env-file .env.test run currency-conv
 
 2. Tests can be run with postgres database or an in memory database, you just have to change the REPOSITORY_TYPE in the .env.test file;
 
+## Documentation :books:
+Swagger documentation for the API can be found in `localhost:3000/docs`.
+
