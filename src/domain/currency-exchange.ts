@@ -1,7 +1,7 @@
 export class CurrencyExchange {
-  public id: number | string;
-  public currency: string;
-  public conversionRate: number;
+  private id: number | string;
+  private currency: string;
+  private conversionRate: number;
 
   constructor(id?: number | string, currency?: string, conversionRate?: number) {
     this.id = id;
@@ -9,12 +9,28 @@ export class CurrencyExchange {
     this.conversionRate = conversionRate;
   }
 
-  setCurrency(currency: string) {
+  getId(): number | string {
+    return this.id;
+  }
+
+  getCurrency(): string {
+    return this.currency;
+  }
+
+  getConversionRate(): number {
+    return this.conversionRate;
+  }
+
+  setId(id: number | string): void {
+    this.id = id;
+  }
+
+  setCurrency(currency: string): void {
     this.assertCurrencyIsValid(currency);
     this.currency = currency;
   }
 
-  setConversionRate(conversionRate: number) {
+  setConversionRate(conversionRate: number): void {
     this.assertConversionRateIsValid(conversionRate);
     this.conversionRate = conversionRate;
   }
@@ -26,7 +42,7 @@ export class CurrencyExchange {
   }
 
   private assertConversionRateIsValid(conversionRate: number): void {
-    if (conversionRate > 0) {
+    if (conversionRate < 0) {
       throw new InvalidConversionRateError(conversionRate);
     }
   }
