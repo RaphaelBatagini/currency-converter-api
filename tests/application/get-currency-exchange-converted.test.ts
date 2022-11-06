@@ -50,8 +50,8 @@ describe('GetCurrencyExchangeConverted', () => {
       const result = await sut.execute(firstCurrency.getCurrency(), amount);
 
       expect(result).toEqual(expect.arrayContaining([
-        { currency: secondCurrency.getCurrency(), amount: amount * 5 },
-        { currency: firstCurrency.getCurrency(), amount },
+        expect.objectContaining({ currency: secondCurrency.getCurrency(), amount: expect.closeTo(amount * 5, 2) }),
+        expect.objectContaining({ currency: firstCurrency.getCurrency(), amount: expect.closeTo(amount, 2) }),
       ]));
     });
   });
