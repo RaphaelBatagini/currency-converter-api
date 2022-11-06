@@ -2,6 +2,8 @@
 
 This repository contains the code of an API to convert currencies developed as a technical test for SBF Group.
 
+![Tests](https://github.com/RaphaelBatagini/eng-gruposbf-backend-typescript/actions/workflows/test.yml/badge.svg?branch=main)
+
 ## Technologies :computer:
 
 - NodeJS API with Typescript
