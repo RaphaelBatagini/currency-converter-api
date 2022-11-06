@@ -3,9 +3,18 @@ import httpStatus from 'http-status';
 import { CurrencyExchangeController } from '../../../src/adapter/http/currency-exchange-controller';
 import { clearDb, createCurrencyExchange } from '../../config/seeds';
 import { MockedHttp } from './http-mock';
+import { connect, close } from '../../../src/infra/database/config';
+
+beforeAll(async () => {
+  await connect();
+});
 
 beforeEach(async () => {
   await clearDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 describe('CurrencyExchangeController', () => {

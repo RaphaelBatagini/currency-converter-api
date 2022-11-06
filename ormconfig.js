@@ -8,10 +8,13 @@ if (!process.env.NODE_ENV) {
 }
 
 const envFilePath = path.resolve(__dirname, `./.env.${process.env.NODE_ENV}`);
+
+let envs;
+
 if (process.env.NODE_ENV !== 'production' && fs.existsSync(envFilePath)) {
-  dotenv.config({ path: envFilePath });
+  envs = dotenv.config({ path: envFilePath }).parsed;
 } else {
-  dotenv.config();
+  envs = dotenv.config().parsed;
 }
 
 const rootDir =
@@ -19,11 +22,11 @@ const rootDir =
 
 module.exports = {
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: envs.DB_HOST,
+  port: envs.DB_PORT,
+  username: envs.DB_USERNAME,
+  password: envs.DB_PASSWORD,
+  database: envs.DB_NAME,
   namingStrategy: new SnakeNamingStrategy(),
   entities: [`${rootDir}/infra/database/models/*.{ts,js}`],
   migrations: [`${rootDir}/infra/database/migrations/*.{ts,js}`],
