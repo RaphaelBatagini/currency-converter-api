@@ -11,7 +11,7 @@ export class CurrencyExchangeDatabaseRepository extends DatabaseRepository<Curre
       },
       (type: CurrencyExchange): CurrencyExchangeModel => {
         const model = new CurrencyExchangeModel();
-        model.id = Number(type.getId());
+        model.id = !!type.getId() ? Number(type.getId()) : 0;
         model.currency = type.getCurrency();
         model.conversionRate = type.getConversionRate();
         return model;

@@ -2,9 +2,18 @@ import faker from '@faker-js/faker';
 import { CurrencyNotFoundError, GetCurrencyExchangeConverted } from '../../src/application/get-currency-exchange-converted';
 import { getCurrencyExchangeRepository } from '../../src/infra/repositories/currency-exchange-repository';
 import { clearDb, createCurrencyExchange } from '../config/seeds';
+import { connect, close } from '../../src/infra/database/config';
+
+beforeAll(async () => {
+  await connect();
+});
 
 beforeEach(async () => {
   await clearDb();
+});
+
+afterAll(async () => {
+  await close();
 });
 
 describe('GetCurrencyExchangeConverted', () => {

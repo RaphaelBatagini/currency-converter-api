@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  currency-conversion-api-test:
+    build:
+      context: .
+    ports:
+      - ${PORT}:${PORT}
+    container_name: currency-conversion-api-backend-test
+    restart: always
+    volumes:
+      - ./:/usr/src/currency-conversion-api-backend/
+    working_dir: /usr/src/currency-conversion-api-backend
+    environment:
+      NODE_ENV: test
+    command:
+      - /bin/sh
+      - -c
+      - |
+        yarn migration:run
+        yarn test
+    depends_on:
+      - currency-conversion-api-database-test
+
+  currency-conversion-api-database-test:
+    image: postgres:14.5
+    container_name: currency-conversion-api-database-test
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    command: postgres -p ${DB_PORT}
