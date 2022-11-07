@@ -1,15 +1,15 @@
 import { ILogger } from "./interface";
 
 export class ConsoleLogger implements ILogger {
-  error (object: any, entity?: Error): void {
-    console.error(object, entity);
+  error (message: any, entity?: Error): void {
+    console.error(message, entity);
   }
 
-  warning (object: any): void {
-    console.warn(object);
+  warning (message: any): void {
+    console.warn(message);
   }
 
-  info (object: any): void {
-    console.log(object);
+  info (message: any): void {
+    console.log(message);
   }
 }

@@ -1,5 +1,4 @@
 import { CurrencyNotFoundError, GetCurrencyExchangeConverted } from "@/application/get-currency-exchange-converted";
-import { InvalidCurrencyError, InvalidConversionRateError } from "@/domain/currency-exchange";
 import { getCurrencyExchangeRepository } from "@/infra/repositories";
 import httpStatus from "http-status";
 import { Http } from "./interface";

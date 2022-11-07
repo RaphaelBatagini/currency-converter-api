@@ -6,6 +6,7 @@ import { Routes } from '@/adapter/http/routes';
 import { IServer } from './interface';
 import { ILogger } from '../logger/interface';
 import swaggerUi from "swagger-ui-express";
+import { cacheManager } from '../cache-tools';
 const swaggerDocument = require('./../../../swagger.json');
 
 export class ExpressWebServer implements IServer {
@@ -27,15 +28,12 @@ export class ExpressWebServer implements IServer {
   }
 
   private async routersSetup(): Promise<void> {
-    this.server.use((req: Request, res: Response, next: NextFunction) => {
-      const date = new Date();
-      this.logger.info(`[${date.toISOString()}] ${req.method}:${req.url} ${res.statusCode}`);
-      next();
-    });
-
     const router = Router();
-    router.use('/docs', swaggerUi.serve);
-    router.get('/docs', swaggerUi.setup(swaggerDocument));
+
+    this.setupLogs(router);
+    this.setupDocs(router);
+    // this.setupCache(router);
+
     this.routes.forEach(route => {
       router[route.method.toLowerCase()](route.path, (req: Request, res: Response) => route.handler(req, res));
     });
@@ -47,6 +45,38 @@ export class ExpressWebServer implements IServer {
 
       this.logger.error('Request/Response Error', error);
       res.status(status).json(error);
+    });
+  }
+
+  private setupLogs(router: Router): void {
+    router.use((req: Request, res: Response, next: NextFunction) => {
+      const date = new Date();
+      this.logger.info(`[${date.toISOString()}] ${req.method}:${req.url} ${res.statusCode}`);
+      next();
+    });
+  }
+
+  private setupDocs(router: Router): void {
+    router.use('/docs', swaggerUi.serve);
+    router.get('/docs', swaggerUi.setup(swaggerDocument));
+  }
+
+  private setupCache(router: Router): void {
+    router.use(async (req: Request, res: Response, next: NextFunction) => {
+      const cacheKey = `cached_route_${req.url || req.originalUrl }`;
+      const cachedResult = await cacheManager.get(cacheKey);
+      if (!!cachedResult) {
+        res.status(httpStatus.OK).send(cachedResult);
+        return;
+      }
+
+      let sendResponse = res.send;
+      // @ts-ignore
+      res.send = async function (body) {
+        await cacheManager.set(cacheKey, res.send(), 60);
+        sendResponse.apply(res, arguments);
+      }
+      next();
     });
   }
 }

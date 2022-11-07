@@ -13,8 +13,10 @@ let envs;
 
 if (process.env.NODE_ENV !== 'production' && fs.existsSync(envFilePath)) {
   envs = dotenv.config({ path: envFilePath }).parsed;
+  dotenv.config({ path: envFilePath });
 } else {
   envs = dotenv.config().parsed;
+  dotenv.config();
 }
 
 const rootDir =

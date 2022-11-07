@@ -1,5 +1,5 @@
 export interface ILogger {
-  error: (object: any, entity?: Error) => void;
-  warning: (object: any) => void;
-  info: (object: any) => void;
+  error: (message: any, entity?: Error) => void;
+  warning: (message: any) => void;
+  info: (message: any) => void;
 };
