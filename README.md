@@ -6,11 +6,12 @@ This repository contains the code of an API to convert currencies developed as a
 
 ## Technologies :computer:
 
-- NodeJS API with Typescript
-- Redis server for cache
-- PostgreSQL for database
-- Jest for tests
-- TypeORM for ORM
+- NodeJS
+- Redis
+- PostgreSQL
+- Jest
+- TypeORM
+- Swagger
 
 ## Setup :gear:
 
@@ -30,5 +31,5 @@ docker-compose -f docker-compose.test.yml --env-file .env.test run currency-conv
 2. Tests can be run with postgres database or an in memory database, you just have to change the REPOSITORY_TYPE in the .env.test file;
 
 ## Documentation :books:
-Swagger documentation for the API can be found in `localhost:3000/docs`.
+Swagger documentation for the API can be found at `localhost:3000/docs`.
 
