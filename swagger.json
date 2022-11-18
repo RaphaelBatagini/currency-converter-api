@@ -3,7 +3,7 @@
   "info": {
     "description": "This is a NodeJS API to convert currencies",
     "version": "1.0.0",
-    "title": "Backend Software Engineer - SBF Group",
+    "title": "Currency Converter API",
     "contact": {
       "email": "raphabatagini@gmail.com"
     },
