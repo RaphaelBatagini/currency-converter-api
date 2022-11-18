@@ -1,8 +1,18 @@
-# Backend Software Engineer - SBF Group
+# Currency Converter API
 
-This repository contains the code of an API to convert currencies developed as a technical test for SBF Group.
+This repository contains the code of a NodeJS API to convert currencies.
 
-![Tests](https://github.com/RaphaelBatagini/eng-gruposbf-backend-typescript/actions/workflows/test.yml/badge.svg?branch=main)
+![Tests](https://github.com/RaphaelBatagini/currency-converter-api/actions/workflows/test.yml/badge.svg?branch=main)
+
+## How it works
+Receives a GET request at `/api/convert/{currency}/{amount}` and returns a JSON with the currency converted in the following format:
+```json
+{
+  "USD": 98.23,
+  "EUR": 83.26,
+  "INR": 7318.93
+}
+```
 
 ## Technologies :computer:
 
